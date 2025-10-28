@@ -15,7 +15,7 @@ MBTI 데이터를 CSV URL에서 직접 불러옵니다.<br>
 """, unsafe_allow_html=True)
 
 # URL 입력 받기
-default_url = "https://raw.githubusercontent.com/yourname/yourrepo/main/countriesMBTI_16types.csv"
+default_url = "https://raw.githubusercontent.com/ansgyu/20251028/main/countriesMBTI_16types.csv"
 csv_url = st.sidebar.text_input("CSV 파일 URL을 입력하세요:", default_url)
 
 # 데이터 불러오기 함수
