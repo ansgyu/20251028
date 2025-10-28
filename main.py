@@ -8,32 +8,48 @@ st.set_page_config(
     layout="wide"
 )
 
-# 제목
-st.title("🌍 MBTI 유형별 국가 TOP 10 분석 대시보드")
+st.title("🌍 MBTI 유형별 국가 TOP 10 분석 대시보드 (URL 기반 데이터 로드)")
 st.markdown("""
-이 대시보드는 국가별 MBTI 분포 데이터를 기반으로 특정 MBTI 유형이 높은 국가 TOP 10을 시각적으로 보여줍니다.<br>
-**📊 그래프는 Altair로 구현되며, 직관적인 색상과 인터랙티브 기능을 제공합니다.**
+MBTI 데이터를 CSV URL에서 직접 불러옵니다.<br>
+**GitHub Raw 링크 또는 공개된 CSV URL을 입력하세요.**
 """, unsafe_allow_html=True)
 
-# 데이터 불러오기
+# URL 입력 받기
+default_url = "https://raw.githubusercontent.com/yourname/yourrepo/main/countriesMBTI_16types.csv"
+csv_url = st.sidebar.text_input("CSV 파일 URL을 입력하세요:", default_url)
+
+# 데이터 불러오기 함수
 @st.cache_data
-def load_data():
-    df = pd.read_csv("countriesMBTI_16types.csv")
-    return df
+def load_data_from_url(url):
+    try:
+        df = pd.read_csv(url)
+        return df, None
+    except Exception as e:
+        return None, str(e)
 
-df = load_data()
+df, error = load_data_from_url(csv_url)
 
-# MBTI 유형 목록 (Country 열 제외 나머지 열)
+# 오류 처리
+if error:
+    st.error(f"❌ 데이터를 불러오는 중 오류 발생: {error}")
+    st.info("💡 URL이 Raw CSV 형식인지 확인하세요. (예: https://raw.githubusercontent.com/...)")
+    st.stop()
+else:
+    st.success("✅ 데이터 불러오기 성공!")
+
+# MBTI 유형 선택 옵션 생성
 mbti_types = [col for col in df.columns if col != "Country"]
 
+if not mbti_types:
+    st.error("CSV에 MBTI 유형 데이터가 포함되어 있지 않습니다. 'Country' 외에 다른 열이 필요합니다.")
+    st.stop()
+
 # 사이드바 선택
-st.sidebar.header("🔎 분석 옵션")
 selected_type = st.sidebar.selectbox("MBTI 유형을 선택하세요:", mbti_types)
 
-# 선택한 유형 기준으로 TOP 10 추출
+# TOP 10 추출
 top10_df = df.nlargest(10, selected_type)[["Country", selected_type]].reset_index(drop=True)
 
-# 제목 출력
 st.subheader(f"🏆 {selected_type} 유형 비율이 높은 국가 TOP 10")
 
 # Altair 차트 생성
@@ -50,22 +66,21 @@ chart = (
     .interactive()
 )
 
-# 그래프 표시
+# 차트 표시
 st.altair_chart(chart, use_container_width=True)
 
-# 데이터 테이블 표시
+# 테이블 표시
 with st.expander("📄 데이터 상세 보기"):
     st.dataframe(top10_df.style.format({selected_type: "{:.2f}"}))
 
-# 인사이트 생성
+# 인사이트
 max_country = top10_df.iloc[0]["Country"]
 max_value = top10_df.iloc[0][selected_type]
 st.markdown(f"""
 ### 🧠 분석 인사이트
 - **{selected_type} 유형이 가장 높은 국가는 `{max_country}`이며, 비율은 {max_value:.2f}% 입니다.**
-- 상위 10개 국가는 전반적으로 `{selected_type}` 유형의 성향이 강하게 나타나는 국가로 해석될 수 있습니다.
+- 상위 10개 국가들은 `{selected_type}` 성향이 두드러지게 나타나는 국가입니다.
 """)
 
-# Footer
 st.markdown("---")
-st.caption("🔧 Powered by Streamlit + Altair | 데이터 기반 MBTI 국가 분석")
+st.caption("🔧 Powered by Streamlit + Altair | URL 기반 데이터 분석")
