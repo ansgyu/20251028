@@ -4,11 +4,11 @@ from collections import Counter
 import re
 
 # Streamlit 애플리케이션 제목 설정
-st.title("🏥 국립나주병원 치료식 식단 빈도 분석")
+st.title("🏥 치료식 식단 빈도 분석")
 st.markdown("---")
 
 # 1. 데이터 불러오기 (인코딩 수정)
-FILE_NAME = "보건복지부 국립나주병원_치료식 식단 정보_20250331.csv"
+FILE_NAME = "치료식 식단 정보_20250331.csv"
 try:
     # 📌 수정된 부분: encoding='cp949' 추가
     df = pd.read_csv(FILE_NAME, encoding='cp949')
