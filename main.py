@@ -71,7 +71,7 @@ def analyze_menu_frequency(df, diet_type):
     menu_counts = Counter(all_menus)
 
     # 제외 목록 (주식류 및 짧은 이름)
-    exclude_list = ['쌀밥', '잡곡밥', '보리밥', '쌀밥1/2', '흑미밥', '흰죽', '쌀죽', '야채죽', '새우살죽', '흑임자죽']
+    exclude_list = ['쌀밥', '잡곡밥', '보리밥', '쌀밥1/2', '흑미밥', '흰죽', '쌀죽', '야채죽', '새우살죽', '흑임자죽', '소스', '포기김치', '깍두기', '갓김치']
     for item in exclude_list:
         menu_counts.pop(item, None)  
 
